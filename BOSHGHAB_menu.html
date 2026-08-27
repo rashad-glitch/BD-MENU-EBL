@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منوی رستوران</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .language-selector {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .language-selector h1 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .language-selector p {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .lang-button {
+            padding: 18px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lang-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .lang-button:active {
+            transform: translateY(-1px);
+        }
+
+        .kurdish-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .arabic-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .farsi-btn {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .menu-view {
+            display: none;
+            text-align: center;
+        }
+
+        .menu-view.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-header {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .menu-header h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateX(-5px);
+        }
+
+        .menu-image {
+            max-width: 95%;
+            max-height: 85vh;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            margin: 20px 0;
+            object-fit: contain;
+        }
+
+        .loading {
+            color: white;
+            font-size: 18px;
+            padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .language-selector {
+                padding: 30px 20px;
+            }
+
+            .language-selector h1 {
+                font-size: 24px;
+            }
+
+            .lang-button {
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+
+            .menu-image {
+                max-height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه انتخاب زبان -->
+    <div id="languageSelector" class="language-selector">
+        <h1>🍽️ منو</h1>
+        <p>لطفاً زبان خود را انتخاب کنید</p>
+        <div class="buttons-container">
+            <button class="lang-button kurdish-btn" onclick="selectLanguage('ku', 'کوردی')">
+                کوردی
+            </button>
+            <button class="lang-button arabic-btn" onclick="selectLanguage('ar', 'العربية')">
+                عربی
+            </button>
+            <button class="lang-button farsi-btn" onclick="selectLanguage('fa', 'فارسی')">
+                فارسی
+            </button>
+        </div>
+    </div>
+
+    <!-- صفحه نمایش منو -->
+    <div id="menuView" class="menu-view">
+        <div class="menu-header">
+            <h2 id="menuTitle">منو</h2>
+        </div>
+        <div id="menuContent" class="loading">در حال بارگذاری...</div>
+        <button class="back-button" onclick="goBack()">← بازگشت</button>
+    </div>
+
+    <script>
+        // لینک های Google Drive
+        const menuLinks = {
+            'ku': 'https://drive.google.com/uc?export=view&id=11LHOTOcZ6wp1NpUobriR2F4l47O0Jrqn',
+            'ar': 'https://drive.google.com/uc?export=view&id=1-Jyu3ChSUALCXVatwY_luPnOT_AnIFJA',
+            'fa': 'https://drive.google.com/uc?export=view&id=1KU0sXrw-h59d7QX737SccRFLxaRntybr'
+        };
+
+        const languageNames = {
+            'ku': 'کوردی',
+            'ar': 'عربی',
+            'fa': 'فارسی'
+        };
+
+        function selectLanguage(langCode, langName) {
+            // پنهان کردن صفحه انتخاب
+            document.getElementById('languageSelector').style.display = 'none';
+            
+            // نمایش صفحه منو
+            const menuView = document.getElementById('menuView');
+            menuView.classList.add('active');
+            
+            // تنظیم عنوان
+            document.getElementById('menuTitle').textContent = `منوی ${langName}`;
+            
+            // تغییر جهت برای زبان های RTL
+            if (langCode === 'ar' || langCode === 'ku' || langCode === 'fa') {
+                document.documentElement.dir = 'rtl';
+            }
+            
+            // نمایش تصویر
+            const menuContent = document.getElementById('menuContent');
+            menuContent.innerHTML = '';
+            
+            const img = document.createElement('img');
+            img.src = menuLinks[langCode];
+            img.alt = `منوی ${langName}`;
+            img.className = 'menu-image';
+            img.onerror = function() {
+                menuContent.innerHTML = '<p style="color: #ff6b6b; font-size: 18px;">خطا در بارگذاری تصویر</p>';
+            };
+            
+            menuContent.appendChild(img);
+        }
+
+        function goBack() {
+            // نمایش صفحه انتخاب
+            document.getElementById('languageSelector').style.display = 'block';
+            
+            // پنهان کردن صفحه منو
+            document.getElementById('menuView').classList.remove('active');
+            
+            // تنظیم مجدد جهت
+            document.documentElement.dir = 'rtl';
+        }
+
+        // تنظیم جهت صفحه به RTL
+        document.documentElement.dir = 'rtl';
+    </script>
+</body>
+</html>
